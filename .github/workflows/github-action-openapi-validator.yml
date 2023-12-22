@@ -9,4 +9,7 @@ jobs:
           fetch-depth: 0
       - name: get file changes
         run: | 
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+          for x in $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
+          do 
+          echo $x
+          done
