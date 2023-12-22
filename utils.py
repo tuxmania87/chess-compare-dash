@@ -2,7 +2,7 @@ import mysql.connector as cn
 import pandas as pd
 import configparser
 
-
+#test
 def get_connection():
     home_dir = "/app/"
     config = configparser.ConfigParser()
