@@ -6,3 +6,4 @@ pandas
 configparser
 mysql-connector-python
 dash-bootstrap-components
+pytest
