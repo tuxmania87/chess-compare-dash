@@ -9,18 +9,19 @@ jobs:
           fetch-depth: 0
       - name: get file changes
         run: |
-          unique_list=() 
+          
+          unique_list=()
           for x in $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
-          do 
-          pos=$(echo "$x" | grep -b -o "tests" | cut -d: -f1)
-          if [ -n  "$pos" ]; then
-            testpath="${path:0:26}"
-            if [[ ! " ${unique_list[@]} " =~ " $testpath " ]]; then
-              unique_list+=("$testpath")
+          do
+            pos=$(echo "$x" | grep -b -o "tests/" | cut -d: -f1)
+            if [ -n  "$pos" ]; then
+              testpath="${x:0:$pos+6}"
+              if [[ ! " ${unique_list[@]} " =~ " $testpath " ]]; then
+                unique_list+=("$testpath")
+              fi
             fi
-          fi
           done
 
           for unique_item in "${unique_list[@]}"; do
-            pytest "$unique_item"
+            pytest $unique_item
           done
