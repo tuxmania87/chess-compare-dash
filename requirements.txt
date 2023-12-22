@@ -1,0 +1,8 @@
+dash
+plotly
+flask
+numpy
+pandas
+configparser
+mysql-connector-python
+dash-bootstrap-components
