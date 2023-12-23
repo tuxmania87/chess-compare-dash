@@ -21,7 +21,7 @@ jobs:
     - name: existance check 
       run: |
         git cat-file -t ${{ github.event.before }}
-      - name: existance check2
+    - name: existance check2
       run: |
         git cat-file -t ${{ github.event.after }}
     - name: test diff
