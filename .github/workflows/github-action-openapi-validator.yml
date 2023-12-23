@@ -21,7 +21,7 @@ jobs:
         git pull
     - name: Debugging Output
       run: |
-        git diff --name-only ${{ github.event.before }} ${{ github.sha }}
+        git diff --name-only ${{ github.sha }}^ ${{ github.sha }}
     - name: Checkout Specific Commit
       run: |
         git checkout ${{ github.event.before }}
