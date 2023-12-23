@@ -15,19 +15,18 @@ jobs:
         pip install -r requirements.txt
     - name: Test with pytest
       run: |
-          
-          unique_list=()
-          for x in $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
-          do
-            pos=$(echo "$x" | grep -b -o "tests/" | cut -d: -f1)
-            if [ -n  "$pos" ]; then
-              testpath="${x:0:$pos+6}"
-              if [[ ! " ${unique_list[@]} " =~ " $testpath " ]]; then
-                unique_list+=("$testpath")
-              fi
+        unique_list=()
+        for x in $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
+        do
+          pos=$(echo "$x" | grep -b -o "tests/" | cut -d: -f1)
+          if [ -n  "$pos" ]; then
+            testpath="${x:0:$pos+6}"
+            if [[ ! " ${unique_list[@]} " =~ " $testpath " ]]; then
+              unique_list+=("$testpath")
             fi
-          done
+          fi
+        done
 
-          for unique_item in "${unique_list[@]}"; do
-            pytest $unique_item
-          done
+        for unique_item in "${unique_list[@]}"; do
+          pytest $unique_item
+        done
