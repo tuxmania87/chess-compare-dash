@@ -17,10 +17,10 @@ jobs:
         pip install -r requirements.txt
     - name: git fetch
       run: | 
-      git fetch
+        git fetch
     - name: test diff
       run: | 
-      git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+        git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
     - name: Test with pytest
       run: |
         unique_list=()
