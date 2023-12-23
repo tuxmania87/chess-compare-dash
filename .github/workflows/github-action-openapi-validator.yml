@@ -22,7 +22,6 @@ jobs:
     - name: Debugging Output
       run: |
         git log --oneline
-        git show-ref
     - name: Checkout Specific Commit
       run: |
         git checkout ${{ github.event.before }}
