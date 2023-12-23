@@ -18,6 +18,12 @@ jobs:
     - name: git fetch
       run: | 
         git fetch
+    - name: existance check 
+      run: |
+        git cat-file -t ${{ github.event.before }}
+      - name: existance check2
+      run: |
+        git cat-file -t ${{ github.event.after }}
     - name: test diff
       run: | 
         git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
