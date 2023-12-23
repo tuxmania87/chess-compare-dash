@@ -17,33 +17,14 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: git fetch
-      run: | 
-        git checkout ${{ github.ref_name }}
-        git pull
-    - name: Debugging Output
-      run: |
-        git diff --name-only ${{ github.base_ref }} ${{ github.sha }}
-    - name: Checkout Specific Commit
-      run: |
-        git checkout ${{ github.event.before }}
-    - name: existance check 
-      run: |
-        git cat-file -t ${{ github.event.before }}
-    - name: existance check2
-      run: |
-        git cat-file -t ${{ github.event.after }}
-    - name: test diff
-      run: | 
-        git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+        pip install openapi-spec-validator
     - name: Test with pytest
       run: |
         unique_list=()
         git fetch
         for x in $(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
         do
-          pos=$(echo "$x" | grep -b -o "tests/" | cut -d: -f1)
+          pos=$(echo "$x" | grep -b -o ".yml" | cut -d: -f1)
           if [ -n  "$pos" ]; then
             testpath="${x:0:$pos+6}"
             if [[ ! " ${unique_list[@]} " =~ " $testpath " ]]; then
@@ -53,5 +34,5 @@ jobs:
         done
 
         for unique_item in "${unique_list[@]}"; do
-          pytest $unique_item
+          openapi-spec-validator $unique_item
         done
