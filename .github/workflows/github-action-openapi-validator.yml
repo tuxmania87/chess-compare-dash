@@ -19,10 +19,6 @@ jobs:
       run: | 
         git checkout ${{ github.ref_name }}
         git pull
-    - name: Clear Cache
-      run: |
-        git clean -ffdx
-        rm -rf ${{ runner.workspace }}/path/to/cache
     - name: Debugging Output
       run: |
         git log --oneline
