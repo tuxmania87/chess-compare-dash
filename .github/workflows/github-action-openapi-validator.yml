@@ -18,6 +18,17 @@ jobs:
     - name: git fetch
       run: | 
         git fetch
+    - name: Clear Cache
+      run: |
+        git clean -ffdx
+        rm -rf ${{ runner.workspace }}/path/to/cache
+    - name: Checkout Specific Commit
+      run: |
+        git checkout ${{ github.event.before }}
+    - name: Debugging Output
+      run: |
+        git log --oneline
+        git show-ref
     - name: existance check 
       run: |
         git cat-file -t ${{ github.event.before }}
