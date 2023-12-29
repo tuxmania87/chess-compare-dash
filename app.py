@@ -1,7 +1,7 @@
-from utils import get_rapid_progress
+from utils import get_rapid_progress, get_rapid_progress_live
 import dash
 import platform
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 from dash import dcc
 from dash import html
@@ -28,6 +28,9 @@ from datetime import date
 import dash_bootstrap_components as dbc
 
 import plotly.graph_objs as go
+import logging
+
+logging.basicConfig(level=logging.INFO, force=True)
 
 server = flask.Flask("app")
 # server.secret_key = os.environ.get('secret_key', 'secret')
@@ -59,7 +62,6 @@ def avg_cp_loss(sline, max_move, white):
 
 
 def assign_daytime(ts):
-
     if ts.hour < 6:
         return "night"
     if ts.hour < 12:
@@ -73,20 +75,20 @@ home_dir = "" if platform.system() == "Windows" else "/app/"
 
 print("HOME_DIR", home_dir, platform.system())
 
-frame_dict = {}
+# frame_dict = {}
 
 config = configparser.ConfigParser()
 config.read(f"{home_dir}general.conf")
 cc = config["DEFAULT"]
 
-players = cc["PLAYERS_SF"].split(",")
-players = sorted(players)
+# players = cc["PLAYERS_SF"].split(",")
+# players = sorted(players)
 
-for p in players:
-    try:
-        frame_dict[p] = ""
-    except:
-        pass
+# for p in players:
+#   try:
+#      frame_dict[p] = ""
+# except:
+#    pass
 
 
 # DEBUG
@@ -166,17 +168,21 @@ tab_selected_style = {
 }
 
 # default player
-selected_player = frame_dict["fettarmqp"]
+# selected_player = frame_dict["fettarmqp"]
 
 app.layout = html.Div(
     [
         html.H1("Chess Rating Compare"),
+        dcc.Input(id="input-field", type="text", placeholder="Enter a value"),
+        html.Button("Submit", id="submit-button", n_clicks=0),
+        html.Div(id="output-container"),
+        html.Div(id="hidden-data", style={"display": "none"}),
         html.Div(
             [
                 html.Span("Choose name", style={"font-weight": "bold"}),
                 dcc.Dropdown(
                     id="input-player",
-                    options=[{"label": x, "value": x} for x in players],
+                    options=[{"label": x, "value": x} for x in ["fettarmqp"]],
                     value="fettarmqp",
                     className="dash-bootstrap",
                     multi=True,
@@ -227,7 +233,9 @@ app.layout = html.Div(
         #    ],
         #    style={"width": "30%", "margin": "auto", "margin-bottom": "20px"},
         # ),
-        dcc.Graph(id="graph-elo", className="container"),
+        dcc.Loading(
+            id="loading-1", children=[dcc.Graph(id="graph-elo", className="container")]
+        ),
         # ], )
     ],
     className="container",
@@ -242,13 +250,53 @@ app.layout = html.Div(
         end_date=date(2021,1,1),
         # """
 
+names = []
+
+
+@app.callback(
+    Output("output-container", "children"),
+    [Input("submit-button", "n_clicks")],
+    [State("input-field", "value")],
+)
+def update_output(n_clicks, input_value):
+    current_data = names
+
+    logging.info(f"DEBUGGG {n_clicks} {input_value} {current_data}")
+
+    if n_clicks > 0 and input_value:
+        if input_value not in names:
+            names.append(input_value)
+
+    # Display the current values in the output container
+    output_text = [
+        html.Div([value, html.Button("X", id={"type": "remove-button", "index": i})])
+        for i, value in enumerate(current_data)
+    ]
+
+    return output_text
+
+
+@app.callback(
+    Output("hidden-data", "children"),
+    [Input({"type": "remove-button", "index": "n_clicks"}, "n_clicks")],
+    [State("hidden-data", "children")],
+)
+def remove_value(n_clicks, current_data):
+    current_data = current_data or []  # Handle case when current_data is None
+    if n_clicks is not None:
+        # Remove the value corresponding to the clicked button
+        index = int(n_clicks.split("_")[-1])
+        current_data.pop(index)
+        return current_data
+    else:
+        return current_data
+
 
 @app.callback(
     Output("graph-elo", "figure"),
     [Input("input-player", "value"), Input("dropdown-timecontrol", "value")],
 )
 def update_graph_elo(player_name, time_control):
-
     # min_date = datetime.datetime.strptime(min_date, "%Y-%m-%d")
     # max_date = datetime.datetime.strptime(max_date, "%Y-%m-%d")
 
@@ -258,7 +306,8 @@ def update_graph_elo(player_name, time_control):
 
         for name in player_name:
             print(f" iterating over {name}")
-            df2 = get_rapid_progress(name, time_control)
+            # df2 = get_rapid_progress(name, time_control)
+            df2 = get_rapid_progress_live(name, time_control)
             if len(df) > 0:
                 df = df.join(df2, how="outer")
             else:
@@ -268,7 +317,7 @@ def update_graph_elo(player_name, time_control):
         print(
             f"no list {type(player_name) == list}  of type {type(player_name)} val {player_name}"
         )
-        df = get_rapid_progress(player_name, time_control)
+        df = get_rapid_progress_live(player_name, time_control)
 
     df = df.reset_index()
 
