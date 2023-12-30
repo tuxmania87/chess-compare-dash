@@ -291,8 +291,8 @@ background_call_manager = DiskcacheManager(cache)
     Output("graph-elo", "figure"),
     [Input("submit-button", "n_clicks"), Input("dropdown-timecontrol", "value")],
     [State("input-field", "value")],
-    #    background=True,
-    #    manager=background_call_manager,
+    background=True,
+    manager=background_call_manager,
 )
 def update_graph_elo(n_clicks, time_control, player_names):
     if n_clicks is None:
