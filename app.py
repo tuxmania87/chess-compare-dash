@@ -1,4 +1,4 @@
-from utils import get_rapid_progress, get_rapid_progress_live
+from utils import get_rapid_progress_live, exists_lichess_account
 import dash
 import platform
 from dash.dependencies import Input, Output, State
@@ -173,8 +173,22 @@ tab_selected_style = {
 app.layout = html.Div(
     [
         html.H1("Chess Rating Compare"),
-        dcc.Input(id="input-field", type="text", placeholder="Enter a value"),
-        html.Button("Submit", id="submit-button", n_clicks=0),
+        html.P("You can compare multiple chess ratings of players here."),
+        html.P(
+            [
+                "Enter the name of the lichess account and select an appropriate time control.Click submit.",
+                html.Br(),
+                "Click submit.",
+            ]
+        ),
+        html.P(
+            [
+                "If the account never got analyzed it will take some time (1-2 minutes) to load the data initially.",
+                html.Br(),
+                "Further requests in the future will reload much faster so be pacient.",
+            ]
+        ),
+        dcc.Input(id="input-field", type="text", placeholder="Enter a lichess account"),
         html.Div(id="output-container"),
         html.Div(id="hidden-data", style={"display": "none"}),
         # html.Div(
@@ -206,6 +220,11 @@ app.layout = html.Div(
             ],
             style={"width": "20%", "margin": "auto", "margin-bottom": "20px"},
         ),
+        html.Div(
+            [
+                html.Button("Submit", id="submit-button", n_clicks=0),
+            ]
+        ),
         # html.Div([
         #    dcc.RangeSlider(
         #    id='time-slider',
@@ -233,6 +252,7 @@ app.layout = html.Div(
         #    ],
         #    style={"width": "30%", "margin": "auto", "margin-bottom": "20px"},
         # ),
+        html.Br(),
         dcc.Loading(
             id="loading-1", children=[dcc.Graph(id="graph-elo", className="container")]
         ),
@@ -264,7 +284,7 @@ def update_output(n_clicks, input_value):
 
     logging.info(f"DEBUGGG {n_clicks} {input_value} {current_data}")
 
-    if n_clicks > 0 and input_value:
+    if n_clicks > 0 and input_value and exists_lichess_account(input_value):
         if input_value not in names:
             names.append(input_value)
             button_ids.append(n_clicks)

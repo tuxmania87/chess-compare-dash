@@ -12,6 +12,12 @@ import os
 # test
 
 
+def exists_lichess_account(name):
+    url = "https://lichess.org/api/users"
+    r = requests.post(url, data=name)
+    return len(r.json()) > 0
+
+
 def get_config():
     home_dir = "" if platform.system() == "Windows" else "/app/"
     config = configparser.ConfigParser()
