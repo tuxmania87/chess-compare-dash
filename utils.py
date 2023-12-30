@@ -68,7 +68,7 @@ def get_rapid_progress_live(username, time_control):
     config = get_config()
     custom_format_to = "%Y-%m-%d %H:%M:%S"
 
-    pickle_filename = f"{username.lower()}_{time_control.lower()}games.pickle"
+    pickle_filename = f"snapshots/{username.lower()}_{time_control.lower()}games.pickle"
     elo_column = f"{username}_elo"
 
     last_game = "1999-01-01 00:00:00"
