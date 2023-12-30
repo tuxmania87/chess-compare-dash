@@ -5,6 +5,7 @@ from dash.dependencies import Input, Output, State
 
 from dash import dcc
 from dash import html
+from dash import DiskcacheManager
 
 from dateutil.relativedelta import relativedelta
 
@@ -280,11 +281,18 @@ app.layout = html.Div(
 names = []
 button_ids = []
 
+import diskcache
+
+cache = diskcache.Cache("./cache")
+background_call_manager = DiskcacheManager(cache)
+
 
 @app.callback(
     Output("graph-elo", "figure"),
     [Input("submit-button", "n_clicks"), Input("dropdown-timecontrol", "value")],
     [State("input-field", "value")],
+    background=True,
+    manager=background_call_manager,
 )
 def update_graph_elo(n_clicks, time_control, player_names):
     if n_clicks is None:
