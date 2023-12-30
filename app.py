@@ -176,7 +176,7 @@ app.layout = html.Div(
         html.P("You can compare multiple chess ratings of players here."),
         html.P(
             [
-                "Enter the name of the lichess account and select an appropriate time control.Click submit.",
+                "Enter the name of the lichess account(s) and select an appropriate time control.Click submit.",
                 html.Br(),
                 "Click submit.",
             ]
@@ -188,73 +188,80 @@ app.layout = html.Div(
                 "Further requests in the future will reload much faster so be pacient.",
             ]
         ),
-        dcc.Input(id="input-field", type="text", placeholder="Enter a lichess account"),
-        html.Div(id="output-container"),
-        html.Div(id="hidden-data", style={"display": "none"}),
-        # html.Div(
-        #    [
-        #        html.Span("Choose name", style={"font-weight": "bold"}),
-        #        dcc.Dropdown(
-        #            id="input-player",
-        #            options=[{"label": x, "value": x} for x in ["fettarmqp"]],
-        #            value="fettarmqp",
-        #            className="dash-bootstrap",
-        #            multi=True,
-        #        ),
-        #    ],
-        #    style={"width": "20%", "margin": "auto", "margin-bottom": "20px"},
-        # ),
-        html.Div(
-            [
-                html.Span("Choose time control", style={"font-weight": "bold"}),
-                dcc.Dropdown(
-                    id="dropdown-timecontrol",
-                    options=[
-                        {"label": "Blitz", "value": "Blitz"},
-                        {"label": "Rapid", "value": "Rapid"},
-                        {"label": "Classical", "value": "Classical"},
-                    ],
-                    value="Rapid",
-                    className="dash-bootstrap",
-                ),
-            ],
-            style={"width": "20%", "margin": "auto", "margin-bottom": "20px"},
-        ),
-        html.Div(
-            [
-                html.Button("Submit", id="submit-button", n_clicks=0),
-            ]
-        ),
-        # html.Div([
-        #    dcc.RangeSlider(
-        #    id='time-slider',
-        #    #min=unix_time_millis(selected_player["PlayedOn"].min()),
-        #    #max=unix_time_millis(selected_player["PlayedOn"].max()),
-        #    #value=[unix_time_millis(selected_player["PlayedOn"].min()), unix_time_millis(selected_player["PlayedOn"].max())],
-        #    #marks=get_marks_from_start_end(selected_player["PlayedOn"].min(), selected_player["PlayedOn"].max()),
-        #    #tooltip={"placement": "bottom", "always_visible": True}
-        #    className="dash-bootstrap"
-        #    ),
-        #    html.Div(id='output-container-range-slider')
-        # ]),
-        # html.Div(
-        #    [
-        #        dcc.DatePickerRange(
-        #            id="date-picker",
-        # min_date_allowed=date(2021, 1, 1),
-        # max_date_allowed=date(2021, 6, 1),
-        # initial_visible_month=date(2021, 8, 5),
-        # start_date=date(2020, 8, 25),
-        # end_date=date(2021,1,1),
-        #            display_format="YYYY-MM-DD",
-        #            className="dash-bootstrap",
-        #        ),
-        #    ],
-        #    style={"width": "30%", "margin": "auto", "margin-bottom": "20px"},
-        # ),
-        html.Br(),
         dcc.Loading(
-            id="loading-1", children=[dcc.Graph(id="graph-elo", className="container")]
+            id="loading-1",
+            children=[
+                dcc.Textarea(
+                    id="input-field",
+                    placeholder="Enter a lichess account(s)",
+                    style={"width": 400, "height": 150},
+                ),
+                html.Div(id="output-container"),
+                html.Div(id="hidden-data", style={"display": "none"}),
+                # html.Div(
+                #    [
+                #        html.Span("Choose name", style={"font-weight": "bold"}),
+                #        dcc.Dropdown(
+                #            id="input-player",
+                #            options=[{"label": x, "value": x} for x in ["fettarmqp"]],
+                #            value="fettarmqp",
+                #            className="dash-bootstrap",
+                #            multi=True,
+                #        ),
+                #    ],
+                #    style={"width": "20%", "margin": "auto", "margin-bottom": "20px"},
+                # ),
+                html.Div(
+                    [
+                        html.Span("Choose time control", style={"font-weight": "bold"}),
+                        dcc.Dropdown(
+                            id="dropdown-timecontrol",
+                            options=[
+                                {"label": "Blitz", "value": "Blitz"},
+                                {"label": "Rapid", "value": "Rapid"},
+                                {"label": "Classical", "value": "Classical"},
+                            ],
+                            value="Rapid",
+                            className="dash-bootstrap",
+                        ),
+                    ],
+                    style={"width": "20%", "margin": "auto", "margin-bottom": "20px"},
+                ),
+                html.Div(
+                    [
+                        html.Button("Submit", id="submit-button", n_clicks=0),
+                    ]
+                ),
+                # html.Div([
+                #    dcc.RangeSlider(
+                #    id='time-slider',
+                #    #min=unix_time_millis(selected_player["PlayedOn"].min()),
+                #    #max=unix_time_millis(selected_player["PlayedOn"].max()),
+                #    #value=[unix_time_millis(selected_player["PlayedOn"].min()), unix_time_millis(selected_player["PlayedOn"].max())],
+                #    #marks=get_marks_from_start_end(selected_player["PlayedOn"].min(), selected_player["PlayedOn"].max()),
+                #    #tooltip={"placement": "bottom", "always_visible": True}
+                #    className="dash-bootstrap"
+                #    ),
+                #    html.Div(id='output-container-range-slider')
+                # ]),
+                # html.Div(
+                #    [
+                #        dcc.DatePickerRange(
+                #            id="date-picker",
+                # min_date_allowed=date(2021, 1, 1),
+                # max_date_allowed=date(2021, 6, 1),
+                # initial_visible_month=date(2021, 8, 5),
+                # start_date=date(2020, 8, 25),
+                # end_date=date(2021,1,1),
+                #            display_format="YYYY-MM-DD",
+                #            className="dash-bootstrap",
+                #        ),
+                #    ],
+                #    style={"width": "30%", "margin": "auto", "margin-bottom": "20px"},
+                # ),
+                html.Br(),
+                dcc.Graph(id="graph-elo", className="container"),
+            ],
         ),
         # ], )
     ],
@@ -275,57 +282,33 @@ button_ids = []
 
 
 @app.callback(
-    Output("output-container", "children"),
-    [Input("submit-button", "n_clicks")],
+    Output("graph-elo", "figure"),
+    [Input("submit-button", "n_clicks"), Input("dropdown-timecontrol", "value")],
     [State("input-field", "value")],
 )
-def update_output(n_clicks, input_value):
-    current_data = names
+def update_graph_elo(n_clicks, time_control, player_names):
+    if n_clicks is None:
+        return
 
-    logging.info(f"DEBUGGG {n_clicks} {input_value} {current_data}")
-
-    if n_clicks > 0 and input_value and exists_lichess_account(input_value):
-        if input_value not in names:
-            names.append(input_value)
-            button_ids.append(n_clicks)
-
-    # Display the current values in the output container
-    output_text = [
-        html.Div([value, html.Button("X", id=f"test-{i}", type="remove-button")])
-        for i, value in enumerate(current_data)
-    ]
-
-    return output_text
-
-
-@app.callback(
-    Output("graph-elo", "figure"),
-    [Input("output-container", "children"), Input("dropdown-timecontrol", "value")],
-)
-def update_graph_elo(player_name, time_control):
     # min_date = datetime.datetime.strptime(min_date, "%Y-%m-%d")
     # max_date = datetime.datetime.strptime(max_date, "%Y-%m-%d")
 
-    player_name = names
+    player_names = [x.strip() for x in player_names.split(",")]
 
-    if type(player_name) == list:
-        print(f"list content {player_name}")
-        df = pd.DataFrame()
+    # filter
+    player_names = [x for x in player_names if exists_lichess_account(x)]
 
-        for name in player_name:
-            print(f" iterating over {name}")
-            # df2 = get_rapid_progress(name, time_control)
-            df2 = get_rapid_progress_live(name, time_control)
-            if len(df) > 0:
-                df = df.join(df2, how="outer")
-            else:
-                df = df2.copy()
+    print(f"list content {player_names}")
+    df = pd.DataFrame()
 
-    else:
-        print(
-            f"no list {type(player_name) == list}  of type {type(player_name)} val {player_name}"
-        )
-        df = get_rapid_progress_live(player_name, time_control)
+    for name in player_names:
+        print(f" iterating over {name}")
+        # df2 = get_rapid_progress(name, time_control)
+        df2 = get_rapid_progress_live(name, time_control)
+        if len(df) > 0:
+            df = df.join(df2, how="outer")
+        else:
+            df = df2.copy()
 
     df = df.reset_index()
 
