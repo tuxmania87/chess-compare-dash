@@ -10,11 +10,18 @@ import os
 
 
 # test
-def get_connection():
+
+
+def get_config():
     home_dir = "" if platform.system() == "Windows" else "/app/"
     config = configparser.ConfigParser()
     config.read(f"{home_dir}general.conf")
     cc = config["DEFAULT"]
+    return cc
+
+
+def get_connection():
+    cc = get_config()
 
     return cn.connect(
         host=cc["HOST"],
@@ -52,6 +59,7 @@ def pgn_parser(pgn):
 
 
 def get_rapid_progress_live(username, time_control):
+    config = get_config()
     custom_format_to = "%Y-%m-%d %H:%M:%S"
 
     pickle_filename = f"{username.lower()}_{time_control.lower()}games.pickle"
@@ -95,7 +103,7 @@ def get_rapid_progress_live(username, time_control):
 
         logging.info(f"Calling URL {url}")
 
-        token = "lip_muqO9FwZPWZgFQF0npel"
+        token = config["APP_TOKEN"]
 
         header = {"Authorization": f"Bearer {token}"}
 
@@ -159,8 +167,8 @@ def get_rapid_progress_live(username, time_control):
 
             df = pd.concat([df, df_existing])
 
-            with open(pickle_filename, "wb") as f:
-                pickle.dump(df, f)
+        with open(pickle_filename, "wb") as f:
+            pickle.dump(df, f)
 
     else:
         logging.info(f"skipping {username}")

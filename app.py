@@ -177,19 +177,19 @@ app.layout = html.Div(
         html.Button("Submit", id="submit-button", n_clicks=0),
         html.Div(id="output-container"),
         html.Div(id="hidden-data", style={"display": "none"}),
-        html.Div(
-            [
-                html.Span("Choose name", style={"font-weight": "bold"}),
-                dcc.Dropdown(
-                    id="input-player",
-                    options=[{"label": x, "value": x} for x in ["fettarmqp"]],
-                    value="fettarmqp",
-                    className="dash-bootstrap",
-                    multi=True,
-                ),
-            ],
-            style={"width": "20%", "margin": "auto", "margin-bottom": "20px"},
-        ),
+        # html.Div(
+        #    [
+        #        html.Span("Choose name", style={"font-weight": "bold"}),
+        #        dcc.Dropdown(
+        #            id="input-player",
+        #            options=[{"label": x, "value": x} for x in ["fettarmqp"]],
+        #            value="fettarmqp",
+        #            className="dash-bootstrap",
+        #            multi=True,
+        #        ),
+        #    ],
+        #    style={"width": "20%", "margin": "auto", "margin-bottom": "20px"},
+        # ),
         html.Div(
             [
                 html.Span("Choose time control", style={"font-weight": "bold"}),
@@ -251,6 +251,7 @@ app.layout = html.Div(
         # """
 
 names = []
+button_ids = []
 
 
 @app.callback(
@@ -266,10 +267,11 @@ def update_output(n_clicks, input_value):
     if n_clicks > 0 and input_value:
         if input_value not in names:
             names.append(input_value)
+            button_ids.append(n_clicks)
 
     # Display the current values in the output container
     output_text = [
-        html.Div([value, html.Button("X", id={"type": "remove-button", "index": i})])
+        html.Div([value, html.Button("X", id=f"test-{i}", type="remove-button")])
         for i, value in enumerate(current_data)
     ]
 
@@ -277,28 +279,14 @@ def update_output(n_clicks, input_value):
 
 
 @app.callback(
-    Output("hidden-data", "children"),
-    [Input({"type": "remove-button", "index": "n_clicks"}, "n_clicks")],
-    [State("hidden-data", "children")],
-)
-def remove_value(n_clicks, current_data):
-    current_data = current_data or []  # Handle case when current_data is None
-    if n_clicks is not None:
-        # Remove the value corresponding to the clicked button
-        index = int(n_clicks.split("_")[-1])
-        current_data.pop(index)
-        return current_data
-    else:
-        return current_data
-
-
-@app.callback(
     Output("graph-elo", "figure"),
-    [Input("input-player", "value"), Input("dropdown-timecontrol", "value")],
+    [Input("output-container", "children"), Input("dropdown-timecontrol", "value")],
 )
 def update_graph_elo(player_name, time_control):
     # min_date = datetime.datetime.strptime(min_date, "%Y-%m-%d")
     # max_date = datetime.datetime.strptime(max_date, "%Y-%m-%d")
+
+    player_name = names
 
     if type(player_name) == list:
         print(f"list content {player_name}")
@@ -322,6 +310,9 @@ def update_graph_elo(player_name, time_control):
     df = df.reset_index()
 
     elo_cols = [x for x in df.columns if "elo" in x]
+
+    logging.info(f"Columns {df.columns}")
+
     fig = px.line(df.iloc[15:], x="game_number", y=elo_cols)
 
     fig.update_layout(
