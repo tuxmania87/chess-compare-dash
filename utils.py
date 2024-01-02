@@ -140,33 +140,7 @@ def get_rapid_progress_live(username, time_control):
             axis=1,
         )
 
-        df = df.drop(
-            [
-                "Event",
-                "UTCDate",
-                "UTCTime",
-                "Variant",
-                "ECO",
-                "Termination",
-                "",
-                "White",
-                "Black",
-                "Result",
-                "BlackElo",
-                "WhiteElo",
-                "WhiteRatingDiff",
-                "BlackRatingDiff",
-                "TimeControl",
-                "Date",
-            ],
-            axis=1,
-        )
-
-        try:
-            df = df.drop(["BlackTitle"], axis=1)
-            df = df.drop(["WhiteTitle"], axis=1)
-        except:
-            pass
+        df = df[["PlayedOn", "Site", elo_column]]
 
         if df_existing is not None:
             # merge
